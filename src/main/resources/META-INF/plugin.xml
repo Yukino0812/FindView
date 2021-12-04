@@ -1,0 +1,26 @@
+<idea-plugin>
+    <id>me.yukino.findview</id>
+    <name>FindView</name>
+    <version>1.0</version>
+    <vendor>Hoshiiro Yukino</vendor>
+
+    <description><![CDATA[
+        A plugin for android developer, with the plugin you can generate "findViewById" code quickly.<br>
+    ]]></description>
+
+    <extensions defaultExtensionNs="com.intellij" />
+
+    <actions>
+        <action id="AutoFindView" class="me.yukino.plugin.findview.action.FindViewAction" text="_FindView">
+            <add-to-group group-id="GenerateGroup" />
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl Y" />
+        </action>
+    </actions>
+
+    <actions>
+        <action id="AutoFindView_xml" class="me.yukino.plugin.findview.action.FindViewXmlAction" text="_FindView (Xml)">
+            <add-to-group group-id="XmlGenerateToolsGroup" anchor="before" relative-to-action="GenerateDTD" />
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl Y" />
+        </action>
+    </actions>
+</idea-plugin>
