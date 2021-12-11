@@ -2,7 +2,6 @@ package me.yukino.plugin.findview.action
 
 import com.intellij.codeInsight.CodeInsightActionHandler
 import com.intellij.codeInsight.generation.actions.BaseGenerateAction
-import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.openapi.actionSystem.PlatformDataKeys
@@ -10,7 +9,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.psi.PsiFile
 import me.yukino.plugin.findview.action.FindViewDialog.OnClickListener
-import me.yukino.plugin.findview.model.PropertiesKey
+import me.yukino.plugin.findview.model.Properties
 import me.yukino.plugin.findview.model.ViewPart
 import me.yukino.plugin.findview.util.ActionUtil
 import me.yukino.plugin.findview.util.CodeWriter
@@ -28,7 +27,6 @@ class FindViewAction constructor(handler: CodeInsightActionHandler? = null) : Ba
 
     private var isAddRootView = false
     private var isViewHolder = false
-    private var isTarget26 = false
     private var rootViewStr: String? = null
     private var viewSaxHandler: ViewSaxHandler? = null
     private var findViewDialog: FindViewDialog? = null
@@ -36,12 +34,18 @@ class FindViewAction constructor(handler: CodeInsightActionHandler? = null) : Ba
     private var tableModel: DefaultTableModel? = null
     private var psiFile: PsiFile? = null
     private var editor: Editor? = null
-    private var currentListSelect = 0 //当前map中的位置
-    private var oldKeyword = "" //上次搜索的关键字
+
+    //当前map中的位置
+    private var currentListSelect = 0
+
+    //上次搜索的关键字
+    private var oldKeyword = ""
 
     //搜索出来匹配的 map key 为在总数据中所在的位置. value 为name
     private val keywordArr = HashMap<Int, String?>()
-    private var isMatch = false //当前是否匹配上
+
+    //当前是否匹配上
+    private var isMatch = false
     private var keys = ArrayList<Int>()
 
     /**
@@ -50,16 +54,14 @@ class FindViewAction constructor(handler: CodeInsightActionHandler? = null) : Ba
     override fun actionPerformed(anActionEvent: AnActionEvent) {
         isAddRootView = false
         isViewHolder = false
-        isTarget26 = false
         viewSaxHandler = ViewSaxHandler()
         if (findViewDialog == null) {
             findViewDialog = FindViewDialog()
         }
         getViewList(anActionEvent)
         ActionUtil.switchAddM(
-            viewParts, PropertiesComponent.getInstance().getBoolean(PropertiesKey.SAVE_ADD_M_ACTION, false)
+            viewParts, Properties.isAddM
         )
-        isTarget26 = PropertiesComponent.getInstance().getBoolean(PropertiesKey.IS_TARGET_26, false)
         updateTable()
         findViewDialog!!.title = "FindView"
         findViewDialog!!.btnCopyCode!!.text = "OK"
@@ -109,7 +111,7 @@ class FindViewAction constructor(handler: CodeInsightActionHandler? = null) : Ba
         }
 
         override fun onOK() {
-            CodeWriter(psiFile, getTargetClass(editor, psiFile), viewParts, isViewHolder, isTarget26, isAddRootView, rootViewStr, editor).execute()
+            CodeWriter(psiFile, getTargetClass(editor, psiFile), viewParts, isViewHolder, Properties.isTarget26, isAddRootView, rootViewStr, editor).execute()
         }
 
         override fun onSelectAll() {
@@ -156,7 +158,6 @@ class FindViewAction constructor(handler: CodeInsightActionHandler? = null) : Ba
         override fun onSwitchIsKotlin(isKotlin: Boolean) {}
         override fun onSwitchExtensions(isExtensions: Boolean) {}
         override fun onSwitchIsTarget26(target26: Boolean) {
-            isTarget26 = target26
             generateCode()
         }
 
@@ -225,8 +226,8 @@ class FindViewAction constructor(handler: CodeInsightActionHandler? = null) : Ba
      * 生成FindViewById代码
      */
     private fun generateCode() {
-        rootViewStr = findViewDialog?.rootView ?: return
-        findViewDialog?.setTextCode(ActionUtil.generateCode(viewParts, isViewHolder, isTarget26, isAddRootView, rootViewStr))
+        rootViewStr = findViewDialog?.rootViewText ?: return
+        findViewDialog?.setTextCode(ActionUtil.generateCode(viewParts, isViewHolder, Properties.isTarget26, isAddRootView, rootViewStr))
     }
 
     /**
@@ -237,7 +238,7 @@ class FindViewAction constructor(handler: CodeInsightActionHandler? = null) : Ba
             return
         }
         tableModel = ActionUtil.getTableModel(viewParts!!, tableModelListener)
-        findViewDialog!!.setModel(tableModel)
+        findViewDialog!!.setTableModel(tableModel)
         generateCode()
     }
 

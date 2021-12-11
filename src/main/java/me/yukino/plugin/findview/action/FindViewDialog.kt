@@ -1,7 +1,6 @@
 package me.yukino.plugin.findview.action
 
-import com.intellij.ide.util.PropertiesComponent
-import me.yukino.plugin.findview.model.PropertiesKey
+import me.yukino.plugin.findview.model.Properties
 import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
@@ -44,86 +43,60 @@ class FindViewDialog : JDialog() {
         textRootView.isEnabled = false
         initStatus()
         btnSearch.addActionListener {
-            if (onClickListener != null) {
-                onClickListener?.onSearch(search)
-            }
+            onClickListener?.onSearch(searchText)
         }
         btnCopyCode.addActionListener {
-            if (onClickListener != null) {
-                onClickListener?.onOK()
-            }
+            onClickListener?.onOK()
             onCancel()
         }
         textRootView.document.addDocumentListener(object : DocumentListener {
             override fun insertUpdate(e: DocumentEvent) {
-                if (onClickListener != null) {
-                    onClickListener?.onUpdateRootView()
-                }
+                onClickListener?.onUpdateRootView()
             }
 
             override fun removeUpdate(e: DocumentEvent) {
-                if (onClickListener != null) {
-                    onClickListener?.onUpdateRootView()
-                }
+                onClickListener?.onUpdateRootView()
             }
 
             override fun changedUpdate(e: DocumentEvent) {
-                if (onClickListener != null) {
-                    onClickListener?.onUpdateRootView()
-                }
+                onClickListener?.onUpdateRootView()
             }
         })
         chbAddM.addChangeListener {
-            if (onClickListener != null) {
-                onClickListener?.onSwitchAddM(chbAddM.isSelected)
-                PropertiesComponent.getInstance().setValue(PropertiesKey.SAVE_ADD_M_ACTION, chbAddM.isSelected)
-            }
+            Properties.isAddM = chbAddM.isSelected
+            onClickListener?.onSwitchAddM(chbAddM.isSelected)
         }
         chbIsViewHolder.addChangeListener {
-            if (onClickListener != null) {
-                onClickListener?.onSwitchIsViewHolder(chbIsViewHolder.isSelected)
-            }
+            onClickListener?.onSwitchIsViewHolder(chbIsViewHolder.isSelected)
         }
         chbIsTarget26.addChangeListener {
-            if (onClickListener != null) {
-                onClickListener?.onSwitchIsTarget26(chbIsTarget26.isSelected)
-                PropertiesComponent.getInstance().setValue(PropertiesKey.IS_TARGET_26, chbIsTarget26.isSelected)
-            }
+            Properties.isTarget26 = chbIsTarget26.isSelected
+            onClickListener?.onSwitchIsTarget26(chbIsTarget26.isSelected)
         }
         chbIsKotlin.addChangeListener {
-            if (onClickListener != null) {
-                onClickListener?.onSwitchIsKotlin(chbIsKotlin.isSelected)
-                PropertiesComponent.getInstance().setValue(PropertiesKey.IS_KT, chbIsKotlin.isSelected)
-            }
+            Properties.isKotlin = chbIsKotlin.isSelected
+            onClickListener?.onSwitchIsKotlin(chbIsKotlin.isSelected)
         }
         chbIsExtensions.addChangeListener {
-            if (onClickListener != null) {
-                onClickListener?.onSwitchExtensions(chbIsExtensions.isSelected)
-                PropertiesComponent.getInstance().setValue(PropertiesKey.IS_KT_ETX, chbIsExtensions.isSelected)
-            }
+            Properties.isKotlinExt = chbIsExtensions.isSelected
+            onClickListener?.onSwitchExtensions(chbIsExtensions.isSelected)
         }
         chbAddRootView.addChangeListener {
             val isAdd = chbAddRootView.isSelected
-            if (onClickListener != null) {
-                onClickListener?.onSwitchAddRootView(isAdd)
-            }
+            onClickListener?.onSwitchAddRootView(isAdd)
             textRootView.isEnabled = isAdd
         }
-        btnClose.addActionListener { onCancel() }
+        btnClose.addActionListener {
+            onCancel()
+        }
         btnSelectAll.addActionListener {
-            if (onClickListener != null) {
-                onClickListener?.onSelectAll()
-            }
+            onClickListener?.onSelectAll()
         }
         btnSelectNone.addActionListener {
-            if (onClickListener != null) {
-                onClickListener?.onSelectNone()
-            }
+            onClickListener?.onSelectNone()
         }
         btnNegativeSelect.addActionListener {
-            if (onClickListener != null) {
-                onClickListener?.onNegativeSelect()
-            }
+            onClickListener?.onNegativeSelect()
         }
         defaultCloseOperation = DO_NOTHING_ON_CLOSE
         addWindowListener(object : WindowAdapter() {
@@ -135,26 +108,26 @@ class FindViewDialog : JDialog() {
             { onCancel() },
             KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
         )
-        contentPane.registerKeyboardAction({
-            if (onClickListener != null) {
+        contentPane.registerKeyboardAction(
+            {
                 onClickListener?.onOK()
-            }
-            onCancel()
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_IN_FOCUSED_WINDOW)
+                onCancel()
+            },
+            KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+            JComponent.WHEN_IN_FOCUSED_WINDOW
+        )
     }
 
     private fun initStatus() {
-        chbAddM.isSelected = PropertiesComponent.getInstance().getBoolean(PropertiesKey.SAVE_ADD_M_ACTION, false)
-        chbIsTarget26.isSelected = PropertiesComponent.getInstance().getBoolean(PropertiesKey.IS_TARGET_26, false)
-        chbIsKotlin.isSelected = PropertiesComponent.getInstance().getBoolean(PropertiesKey.IS_KT, false)
-        chbIsExtensions.isSelected = PropertiesComponent.getInstance().getBoolean(PropertiesKey.IS_KT_ETX, false)
+        chbAddM.isSelected = Properties.isAddM
+        chbIsTarget26.isSelected = Properties.isTarget26
+        chbIsKotlin.isSelected = Properties.isKotlin
+        chbIsExtensions.isSelected = Properties.isKotlinExt
     }
 
     private fun onCancel() {
         dispose()
-        if (onClickListener != null) {
-            onClickListener?.onFinish()
-        }
+        onClickListener?.onFinish()
     }
 
     fun setTextCode(codeStr: String?) {
@@ -162,7 +135,6 @@ class FindViewDialog : JDialog() {
     }
 
     fun setSelect(position: Int) {
-//        System.out.println("开始的位置"+position);
         tableViews.grabFocus()
         tableViews.changeSelection(position, 1, false, false)
     }
@@ -187,13 +159,13 @@ class FindViewDialog : JDialog() {
         this.onClickListener = OnClickListener
     }
 
-    fun setModel(model: DefaultTableModel?) {
+    fun setTableModel(model: DefaultTableModel?) {
         tableViews.model = model
         tableViews.columnModel.getColumn(0).preferredWidth = 20
     }
 
-    val rootView: String
+    val rootViewText: String
         get() = textRootView.text.trim { it <= ' ' }
-    val search: String
+    val searchText: String
         get() = editSearch.text.trim { it <= ' ' }
 }

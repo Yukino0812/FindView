@@ -1,13 +1,12 @@
 package me.yukino.plugin.findview.action
 
-import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.wm.WindowManager
 import me.yukino.plugin.findview.action.FindViewDialog.OnClickListener
-import me.yukino.plugin.findview.model.PropertiesKey
+import me.yukino.plugin.findview.model.Properties
 import me.yukino.plugin.findview.model.ViewPart
 import me.yukino.plugin.findview.util.ActionUtil
 import me.yukino.plugin.findview.util.Utils
@@ -25,19 +24,22 @@ import javax.swing.table.DefaultTableModel
 class FindViewXmlAction : AnAction() {
     private var isAddRootView = false
     private var isViewHolder = false
-    private var isTarget26 = false
-    private var isKotlin = false
-    private var isExtensions = false
     private var viewSaxHandler: ViewSaxHandler? = null
     private var findViewDialog: FindViewDialog? = null
     private var viewParts: List<ViewPart?>? = null
     private var tableModel: DefaultTableModel? = null
-    private var currentListSelect = 0 //当前map中的位置
-    private var oldKeyword = "" //上次搜索的关键字
+
+    //当前map中的位置
+    private var currentListSelect = 0
+
+    //上次搜索的关键字
+    private var oldKeyword = ""
 
     //搜索出来匹配的 map key 为在总数据中所在的位置. value 为name
     private val keywordArr = HashMap<Int, String?>()
-    private var isMatch = false //当前是否匹配上
+
+    //当前是否匹配上
+    private var isMatch = false
     private var keys = ArrayList<Int>()
 
     /**
@@ -46,16 +48,14 @@ class FindViewXmlAction : AnAction() {
     override fun actionPerformed(anActionEvent: AnActionEvent) {
         isAddRootView = false
         isViewHolder = false
-        isTarget26 = false
         viewSaxHandler = ViewSaxHandler()
         if (findViewDialog == null) {
             findViewDialog = FindViewDialog()
         }
         getViewList(anActionEvent)
         ActionUtil.switchAddM(
-            viewParts, PropertiesComponent.getInstance().getBoolean(PropertiesKey.SAVE_ADD_M_ACTION, false)
+            viewParts, Properties.isAddM
         )
-        isTarget26 = PropertiesComponent.getInstance().getBoolean(PropertiesKey.IS_TARGET_26, false)
         updateTable()
         findViewDialog!!.title = "FindView in XML"
         findViewDialog!!.setOnClickListener(OnClickListener)
@@ -138,17 +138,14 @@ class FindViewXmlAction : AnAction() {
         }
 
         override fun onSwitchIsKotlin(isKotlin: Boolean) {
-            this@FindViewXmlAction.isKotlin = isKotlin
             generateCode()
         }
 
         override fun onSwitchExtensions(isExtensions: Boolean) {
-            this@FindViewXmlAction.isExtensions = isExtensions
             generateCode()
         }
 
         override fun onSwitchIsTarget26(target26: Boolean) {
-            isTarget26 = target26
             generateCode()
         }
 
@@ -163,7 +160,7 @@ class FindViewXmlAction : AnAction() {
      * 生成FindViewById代码
      */
     private fun generateCode() {
-        findViewDialog!!.setTextCode(ActionUtil.generateCode(viewParts, isViewHolder, isTarget26, isAddRootView, findViewDialog?.rootView, isKotlin, isExtensions))
+        findViewDialog!!.setTextCode(ActionUtil.generateCode(viewParts, isViewHolder, Properties.isTarget26, isAddRootView, findViewDialog?.rootViewText, Properties.isKotlin, Properties.isKotlinExt))
     }
 
     /**
@@ -174,7 +171,7 @@ class FindViewXmlAction : AnAction() {
             return
         }
         tableModel = ActionUtil.getTableModel(viewParts!!, tableModelListener)
-        findViewDialog!!.setModel(tableModel)
+        findViewDialog!!.setTableModel(tableModel)
         generateCode()
     }
 
