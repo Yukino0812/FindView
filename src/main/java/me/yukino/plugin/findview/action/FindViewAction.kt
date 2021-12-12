@@ -110,6 +110,10 @@ class FindViewAction constructor(handler: CodeInsightActionHandler? = null) : Ba
             generateCode()
         }
 
+        override fun onUpdateIgnorePrefix() {
+            updateTable()
+        }
+
         override fun onOK() {
             CodeWriter(psiFile, getTargetClass(editor, psiFile), viewParts, isViewHolder, Properties.isTarget26, isAddRootView, rootViewStr, editor).execute()
         }
@@ -159,6 +163,10 @@ class FindViewAction constructor(handler: CodeInsightActionHandler? = null) : Ba
         override fun onSwitchExtensions(isExtensions: Boolean) {}
         override fun onSwitchIsTarget26(target26: Boolean) {
             generateCode()
+        }
+
+        override fun onSwitchIgnorePrefix() {
+            updateTable()
         }
 
         override fun onFinish() {
@@ -236,6 +244,9 @@ class FindViewAction constructor(handler: CodeInsightActionHandler? = null) : Ba
     fun updateTable() {
         if (viewParts.isNullOrEmpty()) {
             return
+        }
+        viewParts!!.forEach {
+            it?.generateName()
         }
         tableModel = ActionUtil.getTableModel(viewParts!!, tableModelListener)
         findViewDialog!!.setTableModel(tableModel)

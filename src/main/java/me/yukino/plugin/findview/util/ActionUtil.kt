@@ -28,14 +28,8 @@ object ActionUtil {
     }
 
     fun switchAddM(viewParts: List<ViewPart?>?, isAddM: Boolean) {
-        if (isAddM) {
-            for (viewPart in viewParts!!) {
-                viewPart!!.addMForName()
-            }
-        } else {
-            for (viewPart in viewParts!!) {
-                viewPart!!.resetName()
-            }
+        for (viewPart in viewParts!!) {
+            viewPart!!.generateName()
         }
     }
 
@@ -46,8 +40,11 @@ object ActionUtil {
         isAddRootView: Boolean,
         rootView: String?
     ): String {
+        viewParts!!.forEach { viewPart ->
+            viewPart!!.generateName()
+        }
         val stringBuilder = StringBuilder()
-        for (viewPart in viewParts!!) {
+        for (viewPart in viewParts) {
             if (viewPart!!.isSelected) {
                 stringBuilder.append(viewPart.getDeclareString(isViewHolder, true))
             }
@@ -76,9 +73,12 @@ object ActionUtil {
         isKotlin: Boolean,
         isExtensions: Boolean
     ): String {
+        viewParts!!.forEach { viewPart ->
+            viewPart!!.generateName()
+        }
         val stringBuilder = StringBuilder()
         if (isKotlin) {
-            for (viewPart in viewParts!!) {
+            for (viewPart in viewParts) {
                 stringBuilder.append(viewPart!!.getFindViewStringKt(isExtensions))
             }
         } else {

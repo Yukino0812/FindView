@@ -1,5 +1,6 @@
 package me.yukino.plugin.findview.model
 
+import me.yukino.plugin.findview.model.ViewPart.Companion.ViewIdPreProcessor
 import me.yukino.plugin.findview.util.Definitions
 import me.yukino.plugin.findview.util.Utils
 import java.util.regex.Pattern
@@ -17,17 +18,20 @@ class ViewPart {
     var id: String? = null
         set(value) {
             field = value
-            generateName(field)
+            generateName()
         }
     var name: String? = null
     private var scrNameFromId: String? = null
     var isSelected = true
 
-    private fun generateName(id: String?) {
-        id ?: return
+    fun generateName() {
+        var tempId = this.id ?: return
+        viewIdPreProcessors.forEach {
+            tempId = it.process(tempId)
+        }
         val pattern = Pattern.compile("_([a-zA-Z])")
-        val matcher = pattern.matcher(id)
-        val chars = id.toCharArray()
+        val matcher = pattern.matcher(tempId)
+        val chars = tempId.toCharArray()
         scrNameFromId = String(chars)
         while (matcher.find()) {
             val index = matcher.start(1)
@@ -86,14 +90,6 @@ class ViewPart {
         return String.format(OUTPUT_FIND_VIEW_STRING_KOTLIN, lName, type, type, id)
     }
 
-    fun resetName() {
-        generateName(id)
-    }
-
-    fun addMForName() {
-        generateName("m_$id")
-    }
-
     fun getFindViewStringForViewHolder(rootView: String?, isTarget26: Boolean): String {
         return if (isTarget26) String.format(OUTPUT_FIND_VIEW_STRING_FOR_VIEW_HOLDER_TARGET26, name, rootView, id) else String.format(OUTPUT_FIND_VIEW_STRING_FOR_VIEW_HOLDER, name, type, rootView, id)
     }
@@ -118,5 +114,30 @@ class ViewPart {
         private const val OUTPUT_FIND_VIEW_STRING_FOR_VIEW_HOLDER = "viewHolder.%s = (%s) %s.findViewById(R.id.%s);\n"
         private const val OUTPUT_FIND_VIEW_STRING_FOR_VIEW_HOLDER_TARGET26 =
             "viewHolder.%s = %s.findViewById(R.id.%s);\n"
+
+        private fun interface ViewIdPreProcessor {
+            fun process(id: String): String
+        }
+
+        private val addMPreProcessor = ViewIdPreProcessor {
+            if (Properties.isAddM) {
+                "m_$it"
+            } else {
+                it
+            }
+        }
+
+        private val ignorePrefixPreProcessor = ViewIdPreProcessor {
+            if (Properties.isIgnorePrefix && !Properties.ignorePrefix.isNullOrEmpty()) {
+                it.replaceFirst(Regex(Properties.ignorePrefix!!), "")
+            } else {
+                it
+            }
+        }
+
+        private val viewIdPreProcessors = listOf(
+            ignorePrefixPreProcessor,
+            addMPreProcessor
+        )
     }
 }

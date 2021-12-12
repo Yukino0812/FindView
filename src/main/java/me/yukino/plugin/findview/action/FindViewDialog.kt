@@ -35,6 +35,8 @@ class FindViewDialog : JDialog() {
     private lateinit var btnSearch: JButton
     private lateinit var chbIsKotlin: JCheckBox
     private lateinit var chbIsExtensions: JCheckBox
+    private lateinit var cbIgnorePrefix: JCheckBox
+    private lateinit var etIgnorePrefix: JTextField
     private var onClickListener: OnClickListener? = null
 
     init {
@@ -62,6 +64,22 @@ class FindViewDialog : JDialog() {
                 onClickListener?.onUpdateRootView()
             }
         })
+        etIgnorePrefix.document.addDocumentListener(object : DocumentListener {
+            override fun insertUpdate(e: DocumentEvent) {
+                Properties.ignorePrefix = etIgnorePrefix.text
+                onClickListener?.onUpdateIgnorePrefix()
+            }
+
+            override fun removeUpdate(e: DocumentEvent) {
+                Properties.ignorePrefix = etIgnorePrefix.text
+                onClickListener?.onUpdateIgnorePrefix()
+            }
+
+            override fun changedUpdate(e: DocumentEvent) {
+                Properties.ignorePrefix = etIgnorePrefix.text
+                onClickListener?.onUpdateIgnorePrefix()
+            }
+        })
         chbAddM.addChangeListener {
             Properties.isAddM = chbAddM.isSelected
             onClickListener?.onSwitchAddM(chbAddM.isSelected)
@@ -85,6 +103,10 @@ class FindViewDialog : JDialog() {
             val isAdd = chbAddRootView.isSelected
             onClickListener?.onSwitchAddRootView(isAdd)
             textRootView.isEnabled = isAdd
+        }
+        cbIgnorePrefix.addActionListener {
+            Properties.isIgnorePrefix = cbIgnorePrefix.isSelected
+            onClickListener?.onSwitchIgnorePrefix()
         }
         btnClose.addActionListener {
             onCancel()
@@ -123,6 +145,9 @@ class FindViewDialog : JDialog() {
         chbIsTarget26.isSelected = Properties.isTarget26
         chbIsKotlin.isSelected = Properties.isKotlin
         chbIsExtensions.isSelected = Properties.isKotlinExt
+        cbIgnorePrefix.isSelected = Properties.isIgnorePrefix
+
+        etIgnorePrefix.text = Properties.ignorePrefix
     }
 
     private fun onCancel() {
@@ -141,6 +166,7 @@ class FindViewDialog : JDialog() {
 
     interface OnClickListener {
         fun onUpdateRootView()
+        fun onUpdateIgnorePrefix()
         fun onOK()
         fun onSelectAll()
         fun onSearch(string: String)
@@ -152,6 +178,7 @@ class FindViewDialog : JDialog() {
         fun onSwitchIsKotlin(isKotlin: Boolean)
         fun onSwitchExtensions(isExtensions: Boolean)
         fun onSwitchIsTarget26(target26: Boolean)
+        fun onSwitchIgnorePrefix()
         fun onFinish()
     }
 

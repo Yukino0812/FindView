@@ -91,6 +91,10 @@ class FindViewXmlAction : AnAction() {
             generateCode()
         }
 
+        override fun onUpdateIgnorePrefix() {
+            updateTable()
+        }
+
         override fun onOK() {
             val clip = Toolkit.getDefaultToolkit().systemClipboard
             val tText: Transferable = StringSelection(findViewDialog!!.textCode!!.text)
@@ -149,6 +153,10 @@ class FindViewXmlAction : AnAction() {
             generateCode()
         }
 
+        override fun onSwitchIgnorePrefix() {
+            updateTable()
+        }
+
         override fun onFinish() {
             viewParts = null
             viewSaxHandler = null
@@ -169,6 +177,9 @@ class FindViewXmlAction : AnAction() {
     fun updateTable() {
         if (viewParts.isNullOrEmpty()) {
             return
+        }
+        viewParts!!.forEach {
+            it?.generateName()
         }
         tableModel = ActionUtil.getTableModel(viewParts!!, tableModelListener)
         findViewDialog!!.setTableModel(tableModel)
