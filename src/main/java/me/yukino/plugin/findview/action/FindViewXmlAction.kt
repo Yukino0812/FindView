@@ -22,8 +22,6 @@ import javax.swing.table.DefaultTableModel
  * 15/11/25
  */
 class FindViewXmlAction : AnAction() {
-    private var isAddRootView = false
-    private var isViewHolder = false
     private var viewSaxHandler: ViewSaxHandler? = null
     private var findViewDialog: FindViewDialog? = null
     private var viewParts: List<ViewPart?>? = null
@@ -46,8 +44,6 @@ class FindViewXmlAction : AnAction() {
      * 启动时触发
      */
     override fun actionPerformed(anActionEvent: AnActionEvent) {
-        isAddRootView = false
-        isViewHolder = false
         viewSaxHandler = ViewSaxHandler()
         if (findViewDialog == null) {
             findViewDialog = FindViewDialog()
@@ -127,8 +123,8 @@ class FindViewXmlAction : AnAction() {
             updateTable()
         }
 
-        override fun onSwitchAddRootView(isAddRootView: Boolean) {
-            this@FindViewXmlAction.isAddRootView = isAddRootView
+        override fun onSwitchAddRootView() {
+            generateCode()
         }
 
         override fun onSwitchAddM(addM: Boolean) {
@@ -136,8 +132,7 @@ class FindViewXmlAction : AnAction() {
             updateTable()
         }
 
-        override fun onSwitchIsViewHolder(isViewHolder: Boolean) {
-            this@FindViewXmlAction.isViewHolder = isViewHolder
+        override fun onSwitchIsViewHolder() {
             generateCode()
         }
 
@@ -168,7 +163,7 @@ class FindViewXmlAction : AnAction() {
      * 生成FindViewById代码
      */
     private fun generateCode() {
-        findViewDialog!!.setTextCode(ActionUtil.generateCode(viewParts, isViewHolder, Properties.isTarget26, isAddRootView, findViewDialog?.rootViewText, Properties.isKotlin, Properties.isKotlinExt))
+        findViewDialog!!.setTextCode(ActionUtil.generateCode(viewParts, Properties.isViewHolder, Properties.isTarget26, Properties.isAddRootView, Properties.rootViewStr, Properties.isKotlin, Properties.isKotlinExt))
     }
 
     /**

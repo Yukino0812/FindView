@@ -42,7 +42,6 @@ class FindViewDialog : JDialog() {
     init {
         setContentPane(contentPane)
         isModal = true
-        textRootView.isEnabled = false
         initStatus()
         btnSearch.addActionListener {
             onClickListener?.onSearch(searchText)
@@ -53,14 +52,17 @@ class FindViewDialog : JDialog() {
         }
         textRootView.document.addDocumentListener(object : DocumentListener {
             override fun insertUpdate(e: DocumentEvent) {
+                Properties.rootViewStr = textRootView.text.trim { it <= ' ' }
                 onClickListener?.onUpdateRootView()
             }
 
             override fun removeUpdate(e: DocumentEvent) {
+                Properties.rootViewStr = textRootView.text.trim { it <= ' ' }
                 onClickListener?.onUpdateRootView()
             }
 
             override fun changedUpdate(e: DocumentEvent) {
+                Properties.rootViewStr = textRootView.text.trim { it <= ' ' }
                 onClickListener?.onUpdateRootView()
             }
         })
@@ -85,7 +87,8 @@ class FindViewDialog : JDialog() {
             onClickListener?.onSwitchAddM(chbAddM.isSelected)
         }
         chbIsViewHolder.addChangeListener {
-            onClickListener?.onSwitchIsViewHolder(chbIsViewHolder.isSelected)
+            Properties.isViewHolder = chbIsViewHolder.isSelected
+            onClickListener?.onSwitchIsViewHolder()
         }
         chbIsTarget26.addChangeListener {
             Properties.isTarget26 = chbIsTarget26.isSelected
@@ -100,9 +103,8 @@ class FindViewDialog : JDialog() {
             onClickListener?.onSwitchExtensions(chbIsExtensions.isSelected)
         }
         chbAddRootView.addChangeListener {
-            val isAdd = chbAddRootView.isSelected
-            onClickListener?.onSwitchAddRootView(isAdd)
-            textRootView.isEnabled = isAdd
+            Properties.isAddRootView = chbAddRootView.isSelected
+            onClickListener?.onSwitchAddRootView()
         }
         cbIgnorePrefix.addActionListener {
             Properties.isIgnorePrefix = cbIgnorePrefix.isSelected
@@ -145,8 +147,11 @@ class FindViewDialog : JDialog() {
         chbIsTarget26.isSelected = Properties.isTarget26
         chbIsKotlin.isSelected = Properties.isKotlin
         chbIsExtensions.isSelected = Properties.isKotlinExt
+        chbAddRootView.isSelected = Properties.isAddRootView
+        chbIsViewHolder.isSelected = Properties.isViewHolder
         cbIgnorePrefix.isSelected = Properties.isIgnorePrefix
 
+        textRootView.text = Properties.rootViewStr
         etIgnorePrefix.text = Properties.ignorePrefix
     }
 
@@ -172,9 +177,9 @@ class FindViewDialog : JDialog() {
         fun onSearch(string: String)
         fun onSelectNone()
         fun onNegativeSelect()
-        fun onSwitchAddRootView(isAddRootView: Boolean)
+        fun onSwitchAddRootView()
         fun onSwitchAddM(addM: Boolean)
-        fun onSwitchIsViewHolder(isViewHolder: Boolean)
+        fun onSwitchIsViewHolder()
         fun onSwitchIsKotlin(isKotlin: Boolean)
         fun onSwitchExtensions(isExtensions: Boolean)
         fun onSwitchIsTarget26(target26: Boolean)
@@ -191,8 +196,6 @@ class FindViewDialog : JDialog() {
         tableViews.columnModel.getColumn(0).preferredWidth = 20
     }
 
-    val rootViewText: String
-        get() = textRootView.text.trim { it <= ' ' }
     val searchText: String
         get() = editSearch.text.trim { it <= ' ' }
 }

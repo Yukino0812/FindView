@@ -13,8 +13,11 @@ object Properties {
     var isTarget26 by booleanComponent()
     var isKotlin by booleanComponent()
     var isKotlinExt by booleanComponent()
+    var isAddRootView by booleanComponent()
+    var isViewHolder by booleanComponent()
     var isIgnorePrefix by booleanComponent()
 
+    var rootViewStr by stringComponent()
     var ignorePrefix by stringComponent()
 
     private fun booleanComponent() = PropertiesComponentBooleanDelegate()

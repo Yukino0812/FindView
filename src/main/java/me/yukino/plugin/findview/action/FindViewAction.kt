@@ -25,9 +25,6 @@ import javax.swing.table.DefaultTableModel
  */
 class FindViewAction constructor(handler: CodeInsightActionHandler? = null) : BaseGenerateAction(handler) {
 
-    private var isAddRootView = false
-    private var isViewHolder = false
-    private var rootViewStr: String? = null
     private var viewSaxHandler: ViewSaxHandler? = null
     private var findViewDialog: FindViewDialog? = null
     private var viewParts: List<ViewPart?>? = null
@@ -52,8 +49,6 @@ class FindViewAction constructor(handler: CodeInsightActionHandler? = null) : Ba
      * 启动时触发
      */
     override fun actionPerformed(anActionEvent: AnActionEvent) {
-        isAddRootView = false
-        isViewHolder = false
         viewSaxHandler = ViewSaxHandler()
         if (findViewDialog == null) {
             findViewDialog = FindViewDialog()
@@ -115,7 +110,7 @@ class FindViewAction constructor(handler: CodeInsightActionHandler? = null) : Ba
         }
 
         override fun onOK() {
-            CodeWriter(psiFile, getTargetClass(editor, psiFile), viewParts, isViewHolder, Properties.isTarget26, isAddRootView, rootViewStr, editor).execute()
+            CodeWriter(psiFile, getTargetClass(editor, psiFile), viewParts, Properties.isViewHolder, Properties.isTarget26, Properties.isAddRootView, Properties.rootViewStr, editor).execute()
         }
 
         override fun onSelectAll() {
@@ -144,8 +139,7 @@ class FindViewAction constructor(handler: CodeInsightActionHandler? = null) : Ba
             updateTable()
         }
 
-        override fun onSwitchAddRootView(isAddRootView: Boolean) {
-            this@FindViewAction.isAddRootView = isAddRootView
+        override fun onSwitchAddRootView() {
             generateCode()
         }
 
@@ -154,8 +148,7 @@ class FindViewAction constructor(handler: CodeInsightActionHandler? = null) : Ba
             updateTable()
         }
 
-        override fun onSwitchIsViewHolder(isViewHolder: Boolean) {
-            this@FindViewAction.isViewHolder = isViewHolder
+        override fun onSwitchIsViewHolder() {
             generateCode()
         }
 
@@ -234,8 +227,7 @@ class FindViewAction constructor(handler: CodeInsightActionHandler? = null) : Ba
      * 生成FindViewById代码
      */
     private fun generateCode() {
-        rootViewStr = findViewDialog?.rootViewText ?: return
-        findViewDialog?.setTextCode(ActionUtil.generateCode(viewParts, isViewHolder, Properties.isTarget26, isAddRootView, rootViewStr))
+        findViewDialog?.setTextCode(ActionUtil.generateCode(viewParts, Properties.isViewHolder, Properties.isTarget26, Properties.isAddRootView, Properties.rootViewStr))
     }
 
     /**
