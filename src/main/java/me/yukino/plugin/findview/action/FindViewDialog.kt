@@ -4,15 +4,7 @@ import me.yukino.plugin.findview.model.Properties
 import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
-import javax.swing.JButton
-import javax.swing.JCheckBox
-import javax.swing.JComponent
-import javax.swing.JDialog
-import javax.swing.JPanel
-import javax.swing.JTable
-import javax.swing.JTextArea
-import javax.swing.JTextField
-import javax.swing.KeyStroke
+import javax.swing.*
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 import javax.swing.table.DefaultTableModel
@@ -31,21 +23,18 @@ class FindViewDialog : JDialog() {
     lateinit var btnNegativeSelect: JButton
     private lateinit var chbIsViewHolder: JCheckBox
     private lateinit var chbIsTarget26: JCheckBox
-    private lateinit var editSearch: JTextField
-    private lateinit var btnSearch: JButton
+    private lateinit var editFilter: JTextField
     private lateinit var chbIsKotlin: JCheckBox
     private lateinit var chbIsExtensions: JCheckBox
     private lateinit var cbIgnorePrefix: JCheckBox
     private lateinit var etIgnorePrefix: JTextField
+    private lateinit var chbFilter: JCheckBox
     private var onClickListener: OnClickListener? = null
 
     init {
         setContentPane(contentPane)
         isModal = true
         initStatus()
-        btnSearch.addActionListener {
-            onClickListener?.onSearch(searchText)
-        }
         btnCopyCode.addActionListener {
             onClickListener?.onOK()
             onCancel()
@@ -80,6 +69,22 @@ class FindViewDialog : JDialog() {
             override fun changedUpdate(e: DocumentEvent) {
                 Properties.ignorePrefix = etIgnorePrefix.text
                 onClickListener?.onUpdateIgnorePrefix()
+            }
+        })
+        editFilter.document.addDocumentListener(object : DocumentListener {
+            override fun insertUpdate(e: DocumentEvent?) {
+                Properties.filterStr = editFilter.text.trim { it <= ' ' }
+                onClickListener?.onUpdateFilter()
+            }
+
+            override fun removeUpdate(e: DocumentEvent?) {
+                Properties.filterStr = editFilter.text.trim { it <= ' ' }
+                onClickListener?.onUpdateFilter()
+            }
+
+            override fun changedUpdate(e: DocumentEvent?) {
+                Properties.filterStr = editFilter.text.trim { it <= ' ' }
+                onClickListener?.onUpdateFilter()
             }
         })
         chbAddM.addChangeListener {
@@ -122,6 +127,10 @@ class FindViewDialog : JDialog() {
         btnNegativeSelect.addActionListener {
             onClickListener?.onNegativeSelect()
         }
+        chbFilter.addActionListener {
+            Properties.isFilter = chbFilter.isSelected
+            onClickListener?.onUpdateFilter()
+        }
         defaultCloseOperation = DO_NOTHING_ON_CLOSE
         addWindowListener(object : WindowAdapter() {
             override fun windowClosing(e: WindowEvent) {
@@ -150,9 +159,11 @@ class FindViewDialog : JDialog() {
         chbAddRootView.isSelected = Properties.isAddRootView
         chbIsViewHolder.isSelected = Properties.isViewHolder
         cbIgnorePrefix.isSelected = Properties.isIgnorePrefix
+        chbFilter.isSelected = Properties.isFilter
 
         textRootView.text = Properties.rootViewStr
         etIgnorePrefix.text = Properties.ignorePrefix
+        editFilter.text = Properties.filterStr
     }
 
     private fun onCancel() {
@@ -164,17 +175,12 @@ class FindViewDialog : JDialog() {
         textCode.text = codeStr
     }
 
-    fun setSelect(position: Int) {
-        tableViews.grabFocus()
-        tableViews.changeSelection(position, 1, false, false)
-    }
-
     interface OnClickListener {
         fun onUpdateRootView()
         fun onUpdateIgnorePrefix()
+        fun onUpdateFilter()
         fun onOK()
         fun onSelectAll()
-        fun onSearch(string: String)
         fun onSelectNone()
         fun onNegativeSelect()
         fun onSwitchAddRootView()
@@ -196,6 +202,4 @@ class FindViewDialog : JDialog() {
         tableViews.columnModel.getColumn(0).preferredWidth = 20
     }
 
-    val searchText: String
-        get() = editSearch.text.trim { it <= ' ' }
 }

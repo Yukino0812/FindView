@@ -17,7 +17,7 @@ import com.intellij.psi.PsiIdentifier
 import com.intellij.psi.search.EverythingGlobalScope
 import com.intellij.psi.search.FilenameIndex
 import com.intellij.ui.awt.RelativePoint
-import java.util.Locale
+import java.util.*
 
 /**
  * author: TomasKypta
@@ -76,12 +76,12 @@ object Utils {
     private fun resolveLayoutResourceFile(element: PsiElement, project: Project, name: String): PsiFile? {
         // restricting the search to the current module - searching the whole project could return wrong layouts
         val module = ModuleUtil.findModuleForPsiElement(element)
-        var files: Array<PsiFile?>? = null
+        var files: Array<PsiFile>? = null
         if (module != null) {
             val moduleScope = module.getModuleWithDependenciesAndLibrariesScope(false)
             files = FilenameIndex.getFilesByName(project, name, moduleScope)
         }
-        if (files == null || files.isEmpty()) {
+        if (files.isNullOrEmpty()) {
             // fallback to search through the whole project
             // useful when the project is not properly configured - when the resource directory is not configured
             files = FilenameIndex.getFilesByName(project, name, EverythingGlobalScope(project))
@@ -153,6 +153,7 @@ object Utils {
      * @param text
      */
     fun showNotification(project: Project?, type: MessageType?, text: String?) {
+        project ?: return
         val statusBar = WindowManager.getInstance().getStatusBar(project)
         JBPopupFactory.getInstance()
             .createHtmlTextBalloonBuilder(text!!, type, null)

@@ -16,9 +16,11 @@ object Properties {
     var isAddRootView by booleanComponent()
     var isViewHolder by booleanComponent()
     var isIgnorePrefix by booleanComponent()
+    var isFilter by booleanComponent()
 
     var rootViewStr by stringComponent()
     var ignorePrefix by stringComponent()
+    var filterStr by stringComponent()
 
     private fun booleanComponent() = PropertiesComponentBooleanDelegate()
     private fun stringComponent() = PropertiesComponentStringDelegate()

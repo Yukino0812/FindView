@@ -1,5 +1,6 @@
 package me.yukino.plugin.findview.util
 
+import me.yukino.plugin.findview.model.Properties
 import me.yukino.plugin.findview.model.ViewPart
 import org.xml.sax.SAXException
 import java.io.IOException
@@ -53,7 +54,7 @@ object ActionUtil {
         for (viewPart in viewParts) {
             if (viewPart!!.isSelected) {
                 if (isViewHolder) {
-                    stringBuilder.append(viewPart.getFindViewStringForViewHolder("convertView", isTarget26))
+                    stringBuilder.append(viewPart.getFindViewStringForViewHolder(rootView, isTarget26))
                 } else if (isAddRootView && !rootView.isNullOrEmpty()) {
                     stringBuilder.append(viewPart.getFindViewStringWithRootView(rootView, isTarget26))
                 } else {
@@ -91,7 +92,7 @@ object ActionUtil {
             for (viewPart in viewParts) {
                 if (viewPart!!.isSelected) {
                     if (isViewHolder) {
-                        stringBuilder.append(viewPart.getFindViewStringForViewHolder("convertView", isTarget26))
+                        stringBuilder.append(viewPart.getFindViewStringForViewHolder(rootView, isTarget26))
                     } else if (isAddRootView && !rootView.isNullOrEmpty()) {
                         stringBuilder.append(viewPart.getFindViewStringWithRootView(rootView, isTarget26))
                     } else {
@@ -130,5 +131,16 @@ object ActionUtil {
         }
         tableModel.addTableModelListener(tableModelListener)
         return tableModel
+    }
+
+    fun filter(viewParts: List<ViewPart?>?): List<ViewPart?> {
+        viewParts ?: return emptyList()
+        if (Properties.filterStr.isNullOrEmpty() || !Properties.isFilter) {
+            return viewParts
+        }
+        return viewParts
+            .filter {
+                it?.id?.contains(Properties.filterStr!!) == true
+            }
     }
 }

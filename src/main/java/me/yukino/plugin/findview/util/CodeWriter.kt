@@ -4,13 +4,7 @@ import com.intellij.codeInsight.actions.ReformatCodeProcessor
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
-import com.intellij.psi.JavaPsiFacade
-import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiElementFactory
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiMethod
-import com.intellij.psi.PsiStatement
-import com.intellij.psi.PsiType
+import com.intellij.psi.*
 import com.intellij.psi.codeStyle.JavaCodeStyleManager
 import com.intellij.psi.search.EverythingGlobalScope
 import me.yukino.plugin.findview.model.ViewPart
@@ -161,7 +155,7 @@ class CodeWriter(
                 initViewMethod.body!!.add(mFactory.createStatementFromText(viewPart.getFindViewString(isTarget26), mClass))
             } else {
                 if (isViewHolder) {
-                    methodBuild.append(viewPart.getFindViewStringForViewHolder("convertView", isTarget26))
+                    methodBuild.append(viewPart.getFindViewStringForViewHolder(rootViewStr, isTarget26))
                 } else if (isAddRootView && !rootViewStr.isNullOrEmpty()) {
                     methodBuild.append(viewPart.getFindViewStringWithRootView(rootViewStr, isTarget26))
                 } else {

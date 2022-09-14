@@ -1,7 +1,7 @@
 plugins {
-    id("org.jetbrains.intellij") version "1.3.0"
+    id("org.jetbrains.intellij") version "1.9.0"
     java
-    kotlin("jvm") version "1.5.32"
+    kotlin("jvm") version "1.7.10"
 }
 
 group = "me.yukino.plugin"
@@ -20,7 +20,7 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version.set("2019.2")
+    version.set("2022.2")
     plugins.add("java")
 }
 tasks {

@@ -12,6 +12,7 @@ import me.yukino.plugin.findview.action.FindViewDialog.OnClickListener
 import me.yukino.plugin.findview.model.Properties
 import me.yukino.plugin.findview.model.ViewPart
 import me.yukino.plugin.findview.util.ActionUtil
+import me.yukino.plugin.findview.util.ActionUtil.filter
 import me.yukino.plugin.findview.util.CodeWriter
 import me.yukino.plugin.findview.util.Utils
 import me.yukino.plugin.findview.util.ViewSaxHandler
@@ -109,8 +110,21 @@ class FindViewAction constructor(handler: CodeInsightActionHandler? = null) : Ba
             updateTable()
         }
 
+        override fun onUpdateFilter() {
+            updateTable()
+        }
+
         override fun onOK() {
-            CodeWriter(psiFile, getTargetClass(editor, psiFile), viewParts, Properties.isViewHolder, Properties.isTarget26, Properties.isAddRootView, Properties.rootViewStr, editor).execute()
+            CodeWriter(
+                psiFile,
+                getTargetClass(editor, psiFile),
+                viewParts,
+                Properties.isViewHolder,
+                Properties.isTarget26,
+                Properties.isAddRootView,
+                Properties.rootViewStr,
+                editor
+            ).execute()
         }
 
         override fun onSelectAll() {
@@ -118,11 +132,6 @@ class FindViewAction constructor(handler: CodeInsightActionHandler? = null) : Ba
                 viewPart?.isSelected = true
             }
             updateTable()
-        }
-
-        override fun onSearch(string: String) {
-            val i = selectWord(string)
-            findViewDialog!!.setSelect(i)
         }
 
         override fun onSelectNone() {
@@ -170,64 +179,18 @@ class FindViewAction constructor(handler: CodeInsightActionHandler? = null) : Ba
     }
 
     /**
-     * 搜索关键字的位置
-     *
-     * @param word
-     * @return
-     */
-    fun selectWord(word: String): Int {
-
-        //判断搜索的关键字和上一是否和上次搜索的一致
-        if (oldKeyword == word && isMatch) {
-            keywordArr[keys[currentListSelect]]
-            val value = keywordArr[keys[currentListSelect]]
-            if (!value.isNullOrEmpty()) {
-                currentListSelect++
-                if (currentListSelect >= keys.size) {
-                    currentListSelect = 0
-                }
-                oldKeyword = word
-                return keys[currentListSelect]
-            }
-        } else {
-            getSearchParts(word)
-            return if (keys.isNotEmpty()) {
-                keys[currentListSelect]
-            } else 0
-        }
-        return 0
-    }
-
-    /**
-     * 根据关键字搜索
-     *
-     * @param word
-     */
-    fun getSearchParts(word: String) {
-        var temp = true
-        keys.clear()
-        keywordArr.clear()
-        for (i in viewParts!!.indices) {
-            val viewPart = viewParts!![i] ?: continue
-            val item = Utils.bruteFore(viewPart.name, word)
-            if (item != -1) {
-                //匹配上了
-                isMatch = true
-                if (temp) {
-                    temp = false
-                    oldKeyword = word
-                }
-                keys.add(i)
-                keywordArr[i] = viewPart.name
-            }
-        }
-    }
-
-    /**
      * 生成FindViewById代码
      */
     private fun generateCode() {
-        findViewDialog?.setTextCode(ActionUtil.generateCode(viewParts, Properties.isViewHolder, Properties.isTarget26, Properties.isAddRootView, Properties.rootViewStr))
+        findViewDialog?.setTextCode(
+            ActionUtil.generateCode(
+                filter(viewParts),
+                Properties.isViewHolder,
+                Properties.isTarget26,
+                Properties.isAddRootView,
+                Properties.rootViewStr
+            )
+        )
     }
 
     /**
@@ -240,7 +203,7 @@ class FindViewAction constructor(handler: CodeInsightActionHandler? = null) : Ba
         viewParts!!.forEach {
             it?.generateName()
         }
-        tableModel = ActionUtil.getTableModel(viewParts!!, tableModelListener)
+        tableModel = ActionUtil.getTableModel(filter(viewParts), tableModelListener)
         findViewDialog!!.setTableModel(tableModel)
         generateCode()
     }
