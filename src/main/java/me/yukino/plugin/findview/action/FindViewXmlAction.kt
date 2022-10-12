@@ -48,16 +48,17 @@ class FindViewXmlAction : AnAction() {
         if (findViewDialog == null) {
             findViewDialog = FindViewDialog()
         }
+        findViewDialog?.onStart()
         getViewList(anActionEvent)
-        ActionUtil.switchAddM(
-            viewParts, Properties.isAddM
-        )
+        ActionUtil.switchAddM(viewParts, Properties.isAddM)
         updateTable()
-        findViewDialog!!.title = "FindView in XML"
-        findViewDialog!!.setOnClickListener(OnClickListener)
-        findViewDialog!!.pack()
-        findViewDialog!!.setLocationRelativeTo(WindowManager.getInstance().getFrame(anActionEvent.project))
-        findViewDialog!!.isVisible = true
+        findViewDialog?.apply {
+            title = "FindView in XML"
+            setOnClickListener(OnClickListener)
+            pack()
+            setLocationRelativeTo(WindowManager.getInstance().getFrame(anActionEvent.project))
+            isVisible = true
+        }
     }
 
     /**
@@ -76,7 +77,7 @@ class FindViewXmlAction : AnAction() {
             viewSaxHandler?.layoutPath = psiFile.containingDirectory.toString().replace("PsiDirectory:", "")
             viewSaxHandler?.project = event.project
         }
-        viewParts = ActionUtil.getViewPartList(viewSaxHandler, contentStr)
+        viewParts = ActionUtil.getViewPartList(viewSaxHandler!!, contentStr)
     }
 
     /**
@@ -198,7 +199,7 @@ class FindViewXmlAction : AnAction() {
         val column = event.column
         if (column == 0) {
             val isSelected = tableModel!!.getValueAt(row, column) as Boolean
-            viewSaxHandler?.getViewPartList()?.get(row)?.isSelected = isSelected
+            filter(viewSaxHandler?.getViewPartList())[row]?.isSelected = isSelected
             generateCode()
         }
     }

@@ -163,7 +163,11 @@ class FindViewDialog : JDialog() {
 
         textRootView.text = Properties.rootViewStr
         etIgnorePrefix.text = Properties.ignorePrefix
-        editFilter.text = Properties.filterStr
+    }
+
+    fun onStart() {
+        Properties.filterStr = ""
+        editFilter.text = ""
     }
 
     private fun onCancel() {

@@ -4,7 +4,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiManager
 import me.yukino.plugin.findview.model.ViewPart
-import me.yukino.plugin.findview.util.ActionUtil.filter
 import org.xml.sax.Attributes
 import org.xml.sax.SAXException
 import org.xml.sax.helpers.DefaultHandler
@@ -75,7 +74,7 @@ class ViewSaxHandler : DefaultHandler() {
     }
 
     fun getViewPartList(): List<ViewPart?> {
-        return filter(viewPartList)
+        return viewPartList ?: emptyList()
     }
 
     companion object {

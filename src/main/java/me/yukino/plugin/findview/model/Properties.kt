@@ -20,7 +20,7 @@ object Properties {
 
     var rootViewStr by stringComponent()
     var ignorePrefix by stringComponent()
-    var filterStr by stringComponent()
+    var filterStr: String? = null
 
     private fun booleanComponent() = PropertiesComponentBooleanDelegate()
     private fun stringComponent() = PropertiesComponentStringDelegate()
