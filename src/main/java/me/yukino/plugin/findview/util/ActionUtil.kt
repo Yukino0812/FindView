@@ -80,7 +80,9 @@ object ActionUtil {
         val stringBuilder = StringBuilder()
         if (isKotlin) {
             for (viewPart in viewParts) {
-                stringBuilder.append(viewPart!!.getFindViewStringKt(isExtensions))
+                if (viewPart!!.isSelected) {
+                    stringBuilder.append(viewPart!!.getFindViewStringKt(isExtensions))
+                }
             }
         } else {
             for (viewPart in viewParts!!) {
