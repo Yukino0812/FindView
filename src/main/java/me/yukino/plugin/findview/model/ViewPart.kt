@@ -80,14 +80,18 @@ class ViewPart {
         return if (isTarget26) String.format(OUTPUT_FIND_VIEW_STRING_TARGET26, name, id) else String.format(OUTPUT_FIND_VIEW_STRING, name, type, id)
     }
 
-    fun getFindViewStringKt(isExtensions: Boolean): String {
+    fun getFindViewStringKt(isExtensions: Boolean, isTarget26: Boolean): String {
         val lName: String? =
             if (isExtensions) {
                 scrNameFromId
             } else {
                 name
             }
-        return String.format(OUTPUT_FIND_VIEW_STRING_KOTLIN, lName, type, type, id)
+        return if (isTarget26) {
+            String.format(OUTPUT_FIND_VIEW_STRING_KOTLIN_TARGET26, lName, type, id)
+        } else {
+            String.format(OUTPUT_FIND_VIEW_STRING_KOTLIN, lName, type, type, id)
+        }
     }
 
     fun getFindViewStringForViewHolder(rootView: String?, isTarget26: Boolean): String {
@@ -109,6 +113,7 @@ class ViewPart {
         private const val OUTPUT_FIND_VIEW_STRING = "%s = (%s) findViewById(R.id.%s);\n"
         private const val OUTPUT_FIND_VIEW_STRING_TARGET26 = "%s = findViewById(R.id.%s);\n"
         private const val OUTPUT_FIND_VIEW_STRING_KOTLIN = "private val %s: %s by lazy { findViewById<%s>(R.id.%s) }\n"
+        private const val OUTPUT_FIND_VIEW_STRING_KOTLIN_TARGET26 = "private val %s: %s by lazy { findViewById(R.id.%s) }\n"
         private const val OUTPUT_FIND_VIEW_STRING_WITH_ROOT_VIEW = "%s = (%s) %s.findViewById(R.id.%s);\n"
         private const val OUTPUT_FIND_VIEW_STRING_WITH_ROOT_VIEW_TARGET26 = "%s = %s.findViewById(R.id.%s);\n"
         private const val OUTPUT_FIND_VIEW_STRING_FOR_VIEW_HOLDER = "viewHolder.%s = (%s) %s.findViewById(R.id.%s);\n"

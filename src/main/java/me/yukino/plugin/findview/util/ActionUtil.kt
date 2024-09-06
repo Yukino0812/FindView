@@ -81,7 +81,7 @@ object ActionUtil {
         if (isKotlin) {
             for (viewPart in viewParts) {
                 if (viewPart!!.isSelected) {
-                    stringBuilder.append(viewPart!!.getFindViewStringKt(isExtensions))
+                    stringBuilder.append(viewPart!!.getFindViewStringKt(isExtensions, isTarget26))
                 }
             }
         } else {
