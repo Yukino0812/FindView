@@ -113,7 +113,7 @@ class ViewPart {
         private const val OUTPUT_FIND_VIEW_STRING = "%s = (%s) findViewById(R.id.%s);\n"
         private const val OUTPUT_FIND_VIEW_STRING_TARGET26 = "%s = findViewById(R.id.%s);\n"
         private const val OUTPUT_FIND_VIEW_STRING_KOTLIN = "private val %s: %s by lazy { findViewById<%s>(R.id.%s) }\n"
-        private const val OUTPUT_FIND_VIEW_STRING_KOTLIN_TARGET26 = "private val %s: %s by lazy { findViewById(R.id.%s) }\n"
+        private const val OUTPUT_FIND_VIEW_STRING_KOTLIN_TARGET26 = "private val %s by lazy { findViewById<%s>(R.id.%s) }\n"
         private const val OUTPUT_FIND_VIEW_STRING_WITH_ROOT_VIEW = "%s = (%s) %s.findViewById(R.id.%s);\n"
         private const val OUTPUT_FIND_VIEW_STRING_WITH_ROOT_VIEW_TARGET26 = "%s = %s.findViewById(R.id.%s);\n"
         private const val OUTPUT_FIND_VIEW_STRING_FOR_VIEW_HOLDER = "viewHolder.%s = (%s) %s.findViewById(R.id.%s);\n"
